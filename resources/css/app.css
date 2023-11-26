@@ -1,0 +1,10 @@
+/* Option 1: Adding padding to #navbarNav */
+#navbarNav {
+    justify-content: flex-end;
+    padding: 30px !important; /* Add padding here */
+}
+
+/* Option 2: Adding padding to .navbar-nav */
+#navbarNav .navbar-nav {
+    padding: 30px !important; /* Add padding here */
+}
