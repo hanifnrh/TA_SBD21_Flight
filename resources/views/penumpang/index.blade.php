@@ -50,40 +50,6 @@
             <td>{{ $data->harga_tiket }}</td>
             <td>{{ $data->nama_maskapai }}</td>
             <td>{{ $data->kode_IATA }}</td>
-            <td>
-                <a href="{{ route('penumpang.edit', $data->id_penumpang) }}" type="button" class="btn btn-secondary rounded-3">Update</a>
-
-
-                <!-- Button trigger modal -->
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#hapusModal{{ $data->id_penumpang }}">
-                    Delete
-                </button>
-
-                <!-- Modal -->
-                <!-- Modal -->
-                <div class="modal fade" id="hapusModal{{ $data->id_penumpang }}" tabindex="-1" aria-labelledby="hapusModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="hapusModalLabel">Confirm</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <form method="POST" action="{{ route('penumpang.delete', $data->id_penumpang) }}">
-                                @csrf
-                                <div class="modal-body">
-                                    Are you sure you want do delete this data?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">Yes</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-
-            </td>
         </tr>
         @endforeach
     </tbody>
