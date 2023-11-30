@@ -2,7 +2,7 @@
 
 @section('content')
 
-<h4 class="mt-5">All Data</h4>
+<h4 class="mt-5">Flight Data</h4>
 
 <a href="{{ route('penumpang.index') }}" type="button" class="btn btn-success rounded-3">All Data</a>
 
@@ -21,9 +21,9 @@
     </thead>
     
     <div class="mt-3">
-    <form method="GET" action="{{ route('penumpang.search') }}">
+    <form method="GET" action="{{ route('penumpang.searchflight') }}">
         <div class="input-group">
-            <input type="text" name="query" class="form-control" placeholder="Search penumpang">
+            <input type="text" name="query" class="form-control" placeholder="Search ID penerbangan">
             <button type="submit" class="btn btn-primary">Search</button>
         </div>
     </form>

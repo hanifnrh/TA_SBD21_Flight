@@ -43,7 +43,6 @@
         @foreach ($datas as $data)
         <tr>
             <td>{{ $data->nama_penumpang }}</td>
-            <!-- <td>{{ $data->id_penumpang }}</td> -->
             <td>{{ $data->nomor_telepon }}</td>
             <td>{{ $data->alamat_penumpang }}</td>
             <td>{{ $data->nomor_kursi }}</td>

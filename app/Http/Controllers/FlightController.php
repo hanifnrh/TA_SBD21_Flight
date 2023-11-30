@@ -11,11 +11,19 @@ class FlightController extends Controller
     {
         $datas = DB::select(
             'SELECT * FROM penumpang
-            INNER JOIN tiket ON penumpang.id_tiket = tiket.id_tiket 
+            INNER JOIN tiket ON penumpang.id_tiket = tiket.id_tiket
             INNER JOIN maskapai ON maskapai.id_tiket = tiket.id_tiket'
         );
 
         return view('penumpang.add')->with('datas', $datas);
+    }
+
+    public function createpassenger()
+    {
+        $datas = DB::select(
+            'SELECT * FROM penumpang'
+        );
+        return view('penumpang.addpassenger')->with('datas', $datas);
     }
 
     // public function store the value to a table
@@ -45,6 +53,28 @@ class FlightController extends Controller
         );
 
         return redirect()->route('penumpang.index')->with('success', 'Penumpang Data has been added');
+    }
+
+    public function storepassenger(Request $request)
+    {
+        $request->validate([
+            'nama_penumpang' => 'required',
+            'nomor_telepon' => 'required',
+            'alamat_penumpang' => 'required',
+        ]);
+
+        $namaPenumpang = $request->nama_penumpang;
+        $nomorTelepon = $request->nomor_telepon;
+        $alamatPenumpang = $request->alamat_penumpang;
+        $idTiket = $request->id_tiket;
+
+        // Ensure the number of placeholders matches the number of actual values
+        DB::insert(
+            'INSERT INTO penumpang(nama_penumpang, nomor_telepon, alamat_penumpang, id_tiket, deleted) VALUES (?, ?, ?, ?, 0)',
+            [$namaPenumpang, $nomorTelepon, $alamatPenumpang, $idTiket]
+        );
+
+        return redirect()->route('penumpang.passenger')->with('success', 'Penumpang Data has been added');
     }
 
 
@@ -133,6 +163,19 @@ class FlightController extends Controller
         return view('penumpang.trash')->with('datas', $datas);
     }
 
+    public function ascendingpassenger()
+    {
+        $datas = DB::select(
+            'SELECT *
+            FROM penumpang
+            WHERE deleted = 0
+            ORDER BY nama_penumpang ASC
+            '
+        );
+
+        return view('penumpang.passenger')->with('datas', $datas);
+    }
+
     public function descending()
     {
         $datas = DB::select(
@@ -163,6 +206,19 @@ class FlightController extends Controller
         return view('penumpang.trash')->with('datas', $datas);
     }
 
+    public function descendingpassenger()
+    {
+        $datas = DB::select(
+            'SELECT *
+            FROM penumpang
+            WHERE deleted = 0
+            ORDER BY nama_penumpang DESC
+            '
+        );
+
+        return view('penumpang.passenger')->with('datas', $datas);
+    }
+
 
     public function search(Request $request)
     {
@@ -177,6 +233,46 @@ class FlightController extends Controller
         ");
 
         return view('penumpang.index')->with('datas', $datas);
+    }
+
+    public function searchpassenger(Request $request)
+    {
+        $query = $request->input('query');
+
+        $datas = DB::select("
+            SELECT *
+            FROM penumpang
+            WHERE deleted = 0
+            AND nama_penumpang LIKE '%$query%'
+        ");
+
+        return view('penumpang.passenger')->with('datas', $datas);
+    }
+
+    public function searchairline(Request $request)
+    {
+        $query = $request->input('query');
+
+        $datas = DB::select("
+            SELECT *
+            FROM maskapai
+            WHERE nama_maskapai LIKE '%$query%'
+        ");
+
+        return view('penumpang.airline')->with('datas', $datas);
+    }
+
+    public function searchflight(Request $request)
+    {
+        $query = $request->input('query');
+
+        $datas = DB::select("
+            SELECT *
+            FROM penerbangan
+            WHERE id_penerbangan LIKE '%$query%'
+        ");
+
+        return view('penumpang.flight')->with('datas', $datas);
     }
 
 
@@ -220,6 +316,23 @@ class FlightController extends Controller
         return view('penumpang.edit')->with('data', $data); // Render the edit view with the fetched data
     }
 
+    public function editpassenger($id)
+    {
+        $data = DB::select('
+            SELECT p.id_penumpang, p.nama_penumpang, p.nomor_telepon, p.alamat_penumpang
+            FROM penumpang p
+        ',);
+
+        if (!empty($data)) {
+            $data = $data[0]; // Ambil hanya baris pertama dari hasil query
+        } else {
+            // Handle jika data tidak ditemukan
+            // Contohnya:
+            return redirect()->route('penumpang.index')->with('error', 'Data not found');
+        }
+
+        return view('penumpang.editpassenger')->with('data', $data); // Render the edit view with the fetched data
+    }
 
 
 
@@ -259,7 +372,7 @@ class FlightController extends Controller
             );
 
             DB::commit(); // Commit transaction jika kedua update berhasil
-            return redirect()->route('penumpang.index')->with('success', 'Penumpang data has been changed');
+            return redirect()->route('penumpang.index')->with('success', 'Passenger data has been changed');
         } catch (\Exception $e) {
             DB::rollback(); // Rollback jika terjadi error
             return redirect()->back()->with('error', 'Failed to update data');
@@ -267,6 +380,39 @@ class FlightController extends Controller
 
 
         return redirect()->route('penumpang.index')->with('success', 'Passenger data has been changed');
+    }
+
+    public function updatepassenger($id, Request $request)
+    {
+        $request->validate([
+            'nama_penumpang' => 'required',
+            'nomor_telepon' => 'required',
+            'alamat_penumpang' => 'required',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // Update tabel penumpang
+            DB::update(
+                'UPDATE penumpang SET nama_penumpang = :nama_penumpang, nomor_telepon = :nomor_telepon, alamat_penumpang = :alamat_penumpang WHERE id_penumpang = :id',
+                [
+                    'id' => $id,
+                    'nama_penumpang' => $request->nama_penumpang,
+                    'nomor_telepon' => $request->nomor_telepon,
+                    'alamat_penumpang' => $request->alamat_penumpang,
+                ]
+            );
+
+            DB::commit(); // Commit transaction jika kedua update berhasil
+            return redirect()->route('penumpang.passenger')->with('success', 'Passenger data has been changed');
+        } catch (\Exception $e) {
+            DB::rollback(); // Rollback jika terjadi error
+            return redirect()->back()->with('error', 'Failed to update data');
+        }
+
+
+        return redirect()->route('penumpang.passenger')->with('success', 'Passenger data has been changed');
     }
 
     // public function to delete a row from a table
@@ -278,6 +424,16 @@ class FlightController extends Controller
 
         return redirect()->route('penumpang.index')->with('success', 'Penumpang Data has been sent to trash');
     }
+
+    public function deletepassenger($id)
+    {
+        $sql = "UPDATE penumpang SET deleted = 1 WHERE id_penumpang = :id_penumpang";
+
+        DB::update($sql, ['id_penumpang' => $id]);
+
+        return redirect()->route('penumpang.passenger')->with('success', 'Penumpang Data has been sent to trash');
+    }
+
 
     public function deletereal($id)
     {
