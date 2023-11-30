@@ -35,7 +35,7 @@
                     value="{{ $data->alamat_penumpang }}">
             </div>
             <div class="text-center">
-                <input type="submit" class="btn btn-primary" value="Change" />
+                <input type="submit" class="btn btn-secondary" value="Change" />
             </div>
         </form>
     </div>

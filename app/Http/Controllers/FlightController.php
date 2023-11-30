@@ -321,7 +321,8 @@ class FlightController extends Controller
         $data = DB::select('
             SELECT p.id_penumpang, p.nama_penumpang, p.nomor_telepon, p.alamat_penumpang
             FROM penumpang p
-        ',);
+            WHERE p.id_penumpang = :id
+        ', ['id' => $id]);
 
         if (!empty($data)) {
             $data = $data[0]; // Ambil hanya baris pertama dari hasil query
@@ -331,7 +332,7 @@ class FlightController extends Controller
             return redirect()->route('penumpang.index')->with('error', 'Data not found');
         }
 
-        return view('penumpang.editpassenger')->with('data', $data); // Render the edit view with the fetched data
+        return view('penumpang.editpassenger')->with('data', $data);
     }
 
 

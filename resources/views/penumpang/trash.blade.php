@@ -21,7 +21,7 @@
             <th>Nomor Telepon</th>
             <th>Alamat</th>
             <th>Nomor Kursi</th>
-            <th>Tanggal Pemesanan</th>
+            <th>Tanggal</th>
             <th>Harga Tiket</th>
             <th>Nama Maskapai</th>
             <th>Kode IATA</th>
@@ -49,11 +49,10 @@
             <td>{{ $data->nama_maskapai }}</td>
             <td>{{ $data->kode_IATA }}</td>
             <td>
-                <a href="{{ route('penumpang.edit', $data->id_penumpang) }}" type="button" class="btn btn-warning rounded-3">Ubah</a>
 
                 <!-- Tombol trigger modal -->
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#hapusModal{{ $data->id_penumpang }}">
-                    Hapus
+                    Delete
                 </button>
 
                 <!-- Modal -->

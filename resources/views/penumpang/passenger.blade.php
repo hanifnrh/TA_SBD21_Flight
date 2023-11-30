@@ -28,7 +28,7 @@
         <form method="GET" action="{{ route('penumpang.searchpassenger') }}">
             <div class="input-group">
                 <input type="text" name="query" class="form-control" placeholder="Search penumpang">
-                <button type="submit" class="btn btn-primary">Search</button>
+                <button type="submit" class="btn btn-secondary">Search</button>
             </div>
         </form>
     </div>
@@ -42,7 +42,7 @@
             <td>{{ $data->nomor_telepon }}</td>
             <td>{{ $data->alamat_penumpang }}</td>
             <td>
-                <a href="{{ route('penumpang.editpassenger', $data->id_penumpang) }}" type="button" class="btn btn-warning rounded-3">Update</a>
+                <a href="{{ route('penumpang.editpassenger', $data->id_penumpang) }}" type="button" class="btn btn-secondary rounded-3">Update</a>
 
 
                 <!-- Button trigger modal -->
@@ -58,7 +58,7 @@
                                 <h5 class="modal-title" id="hapusModalLabel">Confirm</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form method="POST" action="{{ route('penumpang.deletepassenger', $data->id_penumpang) }}">
+                            <form method="POST" action="{{ route('penumpang.delete', $data->id_penumpang) }}">
                                 @csrf
                                 <div class="modal-body">
                                     Are you sure you want do delete this data?

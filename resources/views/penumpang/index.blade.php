@@ -33,7 +33,7 @@
     <form method="GET" action="{{ route('penumpang.search') }}">
         <div class="input-group">
             <input type="text" name="query" class="form-control" placeholder="Search passenger">
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="submit" class="btn btn-secondary">Search</button>
         </div>
     </form>
     </div>
@@ -51,7 +51,7 @@
             <td>{{ $data->nama_maskapai }}</td>
             <td>{{ $data->kode_IATA }}</td>
             <td>
-                <a href="{{ route('penumpang.edit', $data->id_penumpang) }}" type="button" class="btn btn-warning rounded-3">Update</a>
+                <a href="{{ route('penumpang.edit', $data->id_penumpang) }}" type="button" class="btn btn-secondary rounded-3">Update</a>
 
 
                 <!-- Button trigger modal -->
@@ -59,6 +59,7 @@
                     Delete
                 </button>
 
+                <!-- Modal -->
                 <!-- Modal -->
                 <div class="modal fade" id="hapusModal{{ $data->id_penumpang }}" tabindex="-1" aria-labelledby="hapusModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
