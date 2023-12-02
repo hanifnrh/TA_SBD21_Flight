@@ -34,8 +34,7 @@ class FlightController extends Controller
             'nomor_telepon' => 'required',
             'alamat_penumpang' => 'required',
             'nomor_kursi' => 'required',
-            'tanggal_pemesanan' => 'required',
-            // 'harga_tiket' => 'required',
+            'tanggal_pemesanan' => 'required'
         ]);
 
         $namaPenumpang = $request->nama_penumpang;
@@ -43,17 +42,23 @@ class FlightController extends Controller
         $alamatPenumpang = $request->alamat_penumpang;
         $nomorKursi = $request->nomor_kursi;
         $tanggalPemesanan = $request->tanggal_pemesanan;
-        // $hargaTiket = $request->harga_tiket;
         $idTiket = $request->id_tiket;
 
-        // Ensure the number of placeholders matches the number of actual values
+        // Check if the seat number already exists
+        $existingSeat = DB::select('SELECT COUNT(*) AS count FROM penumpang WHERE nomor_kursi = ?', [$nomorKursi])[0]->count;
+
+        if ($existingSeat > 0) {
+            return redirect()->back()->with('error', 'Nomor Kursi sudah terpakai. Harap pilih nomor kursi lain.');
+        }
+
         DB::insert(
-            'INSERT INTO penumpang(nama_penumpang, nomor_telepon, alamat_penumpang, id_tiket, deleted) VALUES (?, ?, ?, ?, 0)',
-            [$namaPenumpang, $nomorTelepon, $alamatPenumpang, $idTiket]
+            'INSERT INTO penumpang(nama_penumpang, nomor_telepon, alamat_penumpang, id_tiket, nomor_kursi, deleted) VALUES (?, ?, ?, ?, ?, 0)',
+            [$namaPenumpang, $nomorTelepon, $alamatPenumpang, $idTiket, $nomorKursi]
         );
 
-        return redirect()->route('admin.index')->with('success', 'Penumpang Data has been added');
+        return redirect()->route('admin.index')->with('success', 'Data Penumpang berhasil ditambahkan');
     }
+
 
     public function storepassenger(Request $request)
     {
@@ -61,17 +66,19 @@ class FlightController extends Controller
             'nama_penumpang' => 'required',
             'nomor_telepon' => 'required',
             'alamat_penumpang' => 'required',
+            'nomor_kursi' => 'required',
         ]);
 
         $namaPenumpang = $request->nama_penumpang;
         $nomorTelepon = $request->nomor_telepon;
         $alamatPenumpang = $request->alamat_penumpang;
         $idTiket = $request->id_tiket;
+        $nomorKursi = $request->nomor_kursi;
 
         // Ensure the number of placeholders matches the number of actual values
         DB::insert(
-            'INSERT INTO penumpang(nama_penumpang, nomor_telepon, alamat_penumpang, id_tiket, deleted) VALUES (?, ?, ?, ?, 0)',
-            [$namaPenumpang, $nomorTelepon, $alamatPenumpang, $idTiket]
+            'INSERT INTO penumpang(nama_penumpang, nomor_telepon, alamat_penumpang, id_tiket, nomor_kursi, deleted) VALUES (?, ?, ?, ?, ?, 0)',
+            [$namaPenumpang, $nomorTelepon, $alamatPenumpang, $idTiket, $nomorKursi]
         );
 
         return redirect()->route('admin.passenger')->with('success', 'Penumpang Data has been added');
@@ -299,10 +306,11 @@ class FlightController extends Controller
     public function edit($id)
     {
         $data = DB::select('
-            SELECT p.id_penumpang, p.nama_penumpang, p.nomor_telepon, p.alamat_penumpang, t.nomor_kursi, t.tanggal_pemesanan
+            SELECT p.id_penumpang, p.nama_penumpang, p.nomor_telepon, p.alamat_penumpang, p.nomor_kursi, p.deleted, t.tanggal_pemesanan
             FROM penumpang p
             INNER JOIN tiket t ON p.id_tiket = t.id_tiket
             WHERE p.id_tiket = ?
+            AND p.deleted = 0
         ', [$id]);
 
         if (!empty($data)) {
@@ -310,7 +318,7 @@ class FlightController extends Controller
         } else {
             // Handle jika data tidak ditemukan
             // Contohnya:
-            return redirect()->route('penumpang.index')->with('error', 'Data not found');
+            return redirect()->route('admin.index')->with('error', 'Data not found');
         }
 
         return view('admin.edit')->with('data', $data); // Render the edit view with the fetched data
@@ -319,9 +327,10 @@ class FlightController extends Controller
     public function editpassenger($id)
     {
         $data = DB::select('
-            SELECT p.id_penumpang, p.nama_penumpang, p.nomor_telepon, p.alamat_penumpang
+            SELECT p.id_penumpang, p.nama_penumpang, p.nomor_telepon, p.alamat_penumpang, p.nomor_kursi
             FROM penumpang p
             WHERE p.id_penumpang = :id
+            AND p.deleted = 0
         ', ['id' => $id]);
 
         if (!empty($data)) {
@@ -339,82 +348,117 @@ class FlightController extends Controller
 
     // public function to update the table value
     public function update($id, Request $request)
-    {
-        $request->validate([
-            'nama_penumpang' => 'required',
-            'nomor_telepon' => 'required',
-            'alamat_penumpang' => 'required',
-            'nomor_kursi' => 'required',
-            'tanggal_pemesanan' => 'required',
+{
+    $request->validate([
+        'nama_penumpang' => 'required',
+        'nomor_telepon' => 'required',
+        'alamat_penumpang' => 'required',
+        'nomor_kursi' => 'required',
+        'tanggal_pemesanan' => 'required',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        // Periksa apakah nomor kursi sudah terpakai untuk id_tiket yang berbeda
+        $existingPassenger = DB::select('SELECT * FROM penumpang WHERE nomor_kursi = :nomor_kursi AND id_penumpang != :id AND id_tiket = :id_tiket', [
+            'nomor_kursi' => $request->nomor_kursi,
+            'id' => $id,
+            'id_tiket' => $request->id_tiket, // Ambil id_tiket dari request
         ]);
 
-        DB::beginTransaction();
-
-        try {
-            // Update tabel penumpang
-            DB::update(
-                'UPDATE penumpang SET nama_penumpang = :nama_penumpang, nomor_telepon = :nomor_telepon, alamat_penumpang = :alamat_penumpang WHERE id_penumpang = :id',
-                [
-                    'id' => $id,
-                    'nama_penumpang' => $request->nama_penumpang,
-                    'nomor_telepon' => $request->nomor_telepon,
-                    'alamat_penumpang' => $request->alamat_penumpang,
-                ]
-            );
-
-            // Update tabel tiket
-            DB::update(
-                'UPDATE tiket SET nomor_kursi = :nomor_kursi, tanggal_pemesanan = :tanggal_pemesanan WHERE id_tiket IN (SELECT id_tiket FROM penumpang WHERE id_penumpang = :id)',
-                [
-                    'id' => $id,
-                    'nomor_kursi' => $request->nomor_kursi,
-                    'tanggal_pemesanan' => $request->tanggal_pemesanan,
-                ]
-            );
-
-            DB::commit(); // Commit transaction jika kedua update berhasil
-            return redirect()->route('admin.index')->with('success', 'Passenger data has been changed');
-        } catch (\Exception $e) {
-            DB::rollback(); // Rollback jika terjadi error
-            return redirect()->back()->with('error', 'Failed to update data');
+        if ($existingPassenger) {
+            // Nomor kursi sudah terpakai untuk id_tiket yang berbeda, berikan pesan error atau lakukan tindakan yang sesuai
+            return redirect()->back()->with('error', 'Seat number is already taken for a different ticket');
         }
 
+        // Update tabel penumpang
+        DB::update(
+            'UPDATE penumpang SET nama_penumpang = :nama_penumpang, nomor_telepon = :nomor_telepon, alamat_penumpang = :alamat_penumpang, nomor_kursi = :nomor_kursi WHERE id_penumpang = :id',
+            [
+                'id' => $id,
+                'nama_penumpang' => $request->nama_penumpang,
+                'nomor_telepon' => $request->nomor_telepon,
+                'alamat_penumpang' => $request->alamat_penumpang,
+                'nomor_kursi' => $request->nomor_kursi,
+            ]
+        );
 
+        // Update tabel tiket
+        DB::update(
+            'UPDATE tiket SET tanggal_pemesanan = :tanggal_pemesanan WHERE id_tiket = :id_tiket',
+            [
+                'id_tiket' => $request->id_tiket,
+                'tanggal_pemesanan' => $request->tanggal_pemesanan,
+            ]
+        );
+
+        DB::commit(); // Commit transaction jika kedua update berhasil
         return redirect()->route('admin.index')->with('success', 'Passenger data has been changed');
+    } catch (\Exception $e) {
+        DB::rollback(); // Rollback jika terjadi error
+        return redirect()->back()->with('error', 'Failed to update data');
     }
 
-    public function updatepassenger($id, Request $request)
-    {
-        $request->validate([
-            'nama_penumpang' => 'required',
-            'nomor_telepon' => 'required',
-            'alamat_penumpang' => 'required',
-        ]);
+    return redirect()->route('admin.index')->with('success', 'Passenger data has been changed');
+}
 
-        DB::beginTransaction();
 
-        try {
-            // Update tabel penumpang
-            DB::update(
-                'UPDATE penumpang SET nama_penumpang = :nama_penumpang, nomor_telepon = :nomor_telepon, alamat_penumpang = :alamat_penumpang WHERE id_penumpang = :id',
-                [
-                    'id' => $id,
-                    'nama_penumpang' => $request->nama_penumpang,
-                    'nomor_telepon' => $request->nomor_telepon,
-                    'alamat_penumpang' => $request->alamat_penumpang,
-                ]
-            );
 
-            DB::commit(); // Commit transaction jika kedua update berhasil
-            return redirect()->route('admin.passenger')->with('success', 'Passenger data has been changed');
-        } catch (\Exception $e) {
-            DB::rollback(); // Rollback jika terjadi error
-            return redirect()->back()->with('error', 'Failed to update data');
+public function updatepassenger($id, Request $request)
+{
+    $request->validate([
+        'nama_penumpang' => 'required',
+        'nomor_telepon' => 'required',
+        'alamat_penumpang' => 'required',
+        'nomor_kursi' => 'required',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        // Ambil id_tiket dari penumpang yang akan diupdate
+        $passenger = DB::select('SELECT id_tiket FROM penumpang WHERE id_penumpang = :id', ['id' => $id]);
+        $id_tiket = $passenger[0]->id_tiket ?? null;
+
+        if ($id_tiket) {
+            // Periksa apakah nomor kursi sudah terpakai untuk id_tiket yang berbeda
+            $existingPassenger = DB::select('SELECT * FROM penumpang WHERE nomor_kursi = :nomor_kursi AND id_penumpang != :id AND id_tiket = :id_tiket', [
+                'nomor_kursi' => $request->nomor_kursi,
+                'id' => $id,
+                'id_tiket' => $id_tiket,
+            ]);
+
+            if ($existingPassenger) {
+                // Nomor kursi sudah terpakai untuk id_tiket yang berbeda, berikan pesan error atau lakukan tindakan yang sesuai
+                return redirect()->back()->with('error', 'Seat number is already taken for a different ticket');
+            }
+        } else {
+            return redirect()->back()->with('error', 'Failed to find ticket information for the passenger');
         }
 
+        // Update tabel penumpang
+        DB::update(
+            'UPDATE penumpang SET nama_penumpang = :nama_penumpang, nomor_telepon = :nomor_telepon, alamat_penumpang = :alamat_penumpang, nomor_kursi = :nomor_kursi WHERE id_penumpang = :id',
+            [
+                'id' => $id,
+                'nama_penumpang' => $request->nama_penumpang,
+                'nomor_telepon' => $request->nomor_telepon,
+                'alamat_penumpang' => $request->alamat_penumpang,
+                'nomor_kursi' => $request->nomor_kursi,
+            ]
+        );
 
+        DB::commit(); // Commit transaction jika update berhasil
         return redirect()->route('admin.passenger')->with('success', 'Passenger data has been changed');
+    } catch (\Exception $e) {
+        DB::rollback(); // Rollback jika terjadi error
+        return redirect()->back()->with('error', 'Failed to update data');
     }
+
+    return redirect()->route('admin.passenger')->with('success', 'Passenger data has been changed');
+}
+
 
     // public function to delete a row from a table
 

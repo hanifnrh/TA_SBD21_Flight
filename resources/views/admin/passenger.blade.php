@@ -1,4 +1,4 @@
-@extends('penumpang.layout')
+@extends('admin.layout')
 
 @section('content')
 
@@ -21,6 +21,7 @@
             <th>Nama penumpang</th>
             <th>Nomor Telepon</th>
             <th>Alamat</th>
+            <th>Nomor Kursi</th>
         </tr>
     </thead>
 
@@ -41,6 +42,7 @@
             <td>{{ $data->nama_penumpang }}</td>
             <td>{{ $data->nomor_telepon }}</td>
             <td>{{ $data->alamat_penumpang }}</td>
+            <td>{{ $data->nomor_kursi }}</td>
             <td>
                 <a href="{{ route('admin.editpassenger', $data->id_penumpang) }}" type="button" class="btn btn-secondary rounded-3">Update</a>
 

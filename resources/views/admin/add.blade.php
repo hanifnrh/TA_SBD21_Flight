@@ -1,4 +1,4 @@
-@extends('penumpang.layout')
+@extends('admin.layout')
 @section('content')
 
 @if($errors->any())
@@ -8,6 +8,12 @@
         <li>{{ $error }}</li>
         @endforeach
     </ul>
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger">
+    {{ session('error') }}
 </div>
 @endif
 
@@ -40,17 +46,6 @@
                 <label for="tanggal_pemesanan" class="form-label">Tanggal Pemesanan</label>
                 <input type="text" class="form-control" id="tanggal_pemesanan" name="tanggal_pemesanan">
             </div>
-            <!-- <div class="mb-3">
-                <label for="harga_tiket" class="form-label">Harga</label>
-                <select class="form-control" id="harga_tiket" name="harga_tiket">
-                    @foreach ($datas as $data)
-                    @endforeach
-                    <option value="1000000">Rp1.000.000</option>
-                    <option value="2000000">Rp2.000.000</option>
-                    <option value="3000000">Rp3.000.000</option>
-                    <option value="4000000">Rp4.000.000</option>
-                </select>
-            </div> -->
             <div class="mb-3">
                 <label for="id_tiket" class="form-label">Nama Maskapai</label>
                 <select class="form-control" id="id_tiket" name="id_tiket">
@@ -61,6 +56,7 @@
                     <option value = "2">Garuda Indonesia</option>
                     <option value = "3">Ryan Air</option>
                     <option value = "4">Citylink</option>>
+                    <option value = "5">Sriwijaya Air</option>>
                     
                 </select>
             </div>

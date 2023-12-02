@@ -72,29 +72,29 @@ Route::get('searchtrash', [FlightController::class, 'searchtrash'])->name('admin
 
 
 // ADD
-Route::get('add2', [FlightController::class, 'create'])->name('penumpang.create');
-Route::get('addpassenger2', [FlightController::class, 'createpassenger'])->name('penumpang.createpassenger');
+// Route::get('add2', [FlightController::class, 'create'])->name('penumpang.create');
+// Route::get('addpassenger2', [FlightController::class, 'createpassenger'])->name('penumpang.createpassenger');
 
 // STORE
-Route::post('store2', [FlightController::class, 'store'])->name('penumpang.store');
-Route::post('storepassenger2', [FlightController::class, 'storepassenger'])->name('penumpang.storepassenger');
+// Route::post('store2', [FlightController::class, 'store'])->name('penumpang.store');
+// Route::post('storepassenger2', [FlightController::class, 'storepassenger'])->name('penumpang.storepassenger');
 
 
-Route::get('/index2', [FlightController::class, 'index'])->name('penumpang.index');
-Route::get('passenger2', [FlightController::class, 'passenger'])->name('penumpang.passenger');
-Route::get('flight2', [FlightController::class, 'flight'])->name('penumpang.flight');
-Route::get('airline2', [FlightController::class, 'airline'])->name('penumpang.airline');
+// Route::get('/index2', [FlightController::class, 'index'])->name('penumpang.index');
+// Route::get('passenger2', [FlightController::class, 'passenger'])->name('penumpang.passenger');
+// Route::get('flight2', [FlightController::class, 'flight'])->name('penumpang.flight');
+// Route::get('airline2', [FlightController::class, 'airline'])->name('penumpang.airline');
 
 // SORT
-Route::get('ascending2', [FlightController::class, 'ascending'])->name('penumpang.ascending');
-Route::get('descending2', [FlightController::class, 'descending'])->name('penumpang.descending');
-Route::get('ascendingpassenger2', [FlightController::class, 'ascendingpassenger'])->name('penumpang.ascendingpassenger');
-Route::get('descendingpassenger2', [FlightController::class, 'descendingpassenger'])->name('penumpang.descendingpassenger');
+// Route::get('ascending2', [FlightController::class, 'ascending'])->name('penumpang.ascending');
+// Route::get('descending2', [FlightController::class, 'descending'])->name('penumpang.descending');
+// Route::get('ascendingpassenger2', [FlightController::class, 'ascendingpassenger'])->name('penumpang.ascendingpassenger');
+// Route::get('descendingpassenger2', [FlightController::class, 'descendingpassenger'])->name('penumpang.descendingpassenger');
 
 // SEARCH
-Route::get('search2', [FlightController::class, 'search'])->name('penumpang.search');
-Route::get('searchpassenger2', [FlightController::class, 'searchpassenger'])->name('penumpang.searchpassenger');
-Route::get('searchairline2', [FlightController::class, 'searchairline'])->name('penumpang.searchairline');
-Route::get('searchflight2', [FlightController::class, 'searchflight'])->name('penumpang.searchflight');
-Route::get('searchtrash2', [FlightController::class, 'searchtrash'])->name('penumpang.searchtrash');
+// Route::get('search2', [FlightController::class, 'search'])->name('penumpang.search');
+// Route::get('searchpassenger2', [FlightController::class, 'searchpassenger'])->name('penumpang.searchpassenger');
+// Route::get('searchairline2', [FlightController::class, 'searchairline'])->name('penumpang.searchairline');
+// Route::get('searchflight2', [FlightController::class, 'searchflight'])->name('penumpang.searchflight');
+// Route::get('searchtrash2', [FlightController::class, 'searchtrash'])->name('penumpang.searchtrash');
 

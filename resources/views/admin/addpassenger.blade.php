@@ -1,4 +1,4 @@
-@extends('penumpang.layout')
+@extends('admin.layout')
 @section('content')
 
 @if($errors->any())

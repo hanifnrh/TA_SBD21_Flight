@@ -1,4 +1,4 @@
-@extends('penumpang.layout')
+@extends('admin.layout')
 
 @section('content')
 
@@ -6,11 +6,15 @@
 <div class="alert alert-danger">
     <ul>
         @foreach($errors->all() as $error)
-
-        <li>{{ $error }}</li>
-
+            <li>{{ $error }}</li>
         @endforeach
     </ul>
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger">
+    {{ session('error') }}
 </div>
 @endif
 
@@ -33,6 +37,11 @@
                 <label for="alamat_penumpang" class="form-label">Alamat</label>
                 <input type="text" class="form-control" id="alamat_penumpang" name="alamat_penumpang"
                     value="{{ $data->alamat_penumpang }}">
+            </div>
+            <div class="mb-3">
+                <label for="alamat_penumpang" class="form-label">Nomor Kursi</label>
+                <input type="text" class="form-control" id="nomor_kursi" name="nomor_kursi"
+                    value="{{ $data->nomor_kursi }}">
             </div>
             <div class="text-center">
                 <input type="submit" class="btn btn-secondary" value="Change" />

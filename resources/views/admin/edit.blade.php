@@ -1,4 +1,4 @@
-@extends('penumpang.layout')
+@extends('admin.layout')
 
 @section('content')
 
@@ -11,6 +11,12 @@
 
         @endforeach
     </ul>
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger">
+    {{ session('error') }}
 </div>
 @endif
 
